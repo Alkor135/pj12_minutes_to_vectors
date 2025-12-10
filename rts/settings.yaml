@@ -1,0 +1,12 @@
+# rts/settings.yaml
+
+ticker: 'RTS'
+ticker_lc: 'rts'
+time_start: '21:00:00'
+time_end: '20:59:59'
+start_date_download_minutes: '2015-01-01'  # Дата начала загрузки минутных свечей
+test_days: 22  # Количество дней для тестирования
+
+# cache_file: 'C:/Users/Alkor/PycharmProjects/beget_rss/{ticker_lc}/{ticker_lc}_embeddings_{provider}_ollama.pkl'
+path_db_minute: 'C:/Users/Alkor/gd/data_quote_db/{ticker}_futures_minute_2015.db'
+path_db_day: 'C:/Users/Alkor/gd/data_quote_db/{ticker}_futures_day_2025_21-00.db'
