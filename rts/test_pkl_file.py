@@ -1,6 +1,7 @@
 import pandas as pd
 
-PKL_FILE = r"RTS_futures_minute_2015_vectors.pkl"
+# PKL_FILE = r"RTS_futures_minute_2015_vectors.pkl"
+PKL_FILE = r"RTS_futures_daily_vectors.pkl"
 
 # Загрузка DataFrame из pkl
 df = pd.read_pickle(PKL_FILE)
