@@ -4,15 +4,26 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import yaml
 
-# Пути к файлам
-PKL_MINUTE = r"RTS_futures_minute_2015_vectors.pkl"
-DB_PATH = r"C:\Users\Alkor\gd\data_quote_db\RTS_futures_minute_2015.db"
-TABLE_NAME = "Futures"  # <-- замените на реальное имя таблицы
-PKL_DAILY = r"RTS_futures_daily_vectors.pkl"
+# Путь к settings.yaml в той же директории, что и скрипт
+SETTINGS_FILE = Path(__file__).parent / "settings.yaml"
 
+# Чтение настроек
+with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
+    settings = yaml.safe_load(f)
+
+# ==== Параметры ====
+ticker = settings['ticker']
+
+# Путь к файлам и БД
+PKL_MINUTE = fr"{ticker}_futures_minute_2015_vectors.pkl"
+DB_PATH = Path(settings['path_db_minute'].replace('{ticker}', ticker))
+PKL_DAILY = fr"{ticker}_futures_daily_vectors.pkl"
+TABLE_NAME = "Futures"  # имя таблицы в БД
+
+# Регистрируем tqdm для pandas
 tqdm.pandas()
-
 
 def load_minute_vectors(pkl_path: str) -> pd.DataFrame:
     """

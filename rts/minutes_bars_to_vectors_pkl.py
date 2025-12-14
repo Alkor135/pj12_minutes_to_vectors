@@ -3,16 +3,28 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
+import yaml
 
-# Регистрируем tqdm для pandas
-tqdm.pandas()
+# Путь к settings.yaml в той же директории, что и скрипт
+SETTINGS_FILE = Path(__file__).parent / "settings.yaml"
 
-DB_PATH = r"C:\Users\Alkor\gd\data_quote_db\RTS_futures_minute_2015.db"
-TABLE_NAME = "Futures"  # <-- поменять на реальное имя таблицы в БД
-PKL_OUT = r"RTS_futures_minute_2015_vectors.pkl"
+# Чтение настроек
+with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
+    settings = yaml.safe_load(f)
+
+# ==== Параметры ====
+ticker = settings['ticker']
+
+# Путь к файлам и БД
+DB_PATH = Path(settings['path_db_minute'].replace('{ticker}', ticker))
+PKL_OUT = Path(fr"{ticker}_futures_minute_2015_vectors.pkl")
+TABLE_NAME = "Futures"  # имя таблицы в БД
 
 # параметры нормализации объёма
 VOLUME_WINDOW = 100
+
+# Регистрируем tqdm для pandas
+tqdm.pandas()
 
 def load_ohlcv_from_sqlite(db_path: str, table_name: str) -> pd.DataFrame:
     """
@@ -97,6 +109,9 @@ def compute_features(df: pd.DataFrame) -> pd.DataFrame:
         name="VECTORS",
     )
 
+    # Заменяем NaN на 0
+    vectors = vectors.apply(lambda x: np.nan_to_num(x, nan=0.0))
+
     out_df = pd.DataFrame(
         {
             "TRADEDATE": df["TRADEDATE"],
@@ -112,8 +127,11 @@ def main():
     df_raw = load_ohlcv_from_sqlite(DB_PATH, TABLE_NAME)
     df_vectors = compute_features(df_raw)
 
-    # Прогресс-бар при сохранении в pickle
-    df_vectors.to_pickle(PKL_OUT)
+    # Показываем прогресс сохранения (одна "итерация" — весь процесс)
+    with tqdm(total=1, desc="Saving to pickle", unit="file") as pbar:
+        df_vectors.to_pickle(PKL_OUT)
+        pbar.update(1)
+
     print(f"Saved {len(df_vectors)} rows to {PKL_OUT}")
 
 if __name__ == "__main__":
