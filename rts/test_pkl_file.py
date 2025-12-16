@@ -1,3 +1,7 @@
+"""
+Тест (визуализация) содержимого pkl файлов.
+"""
+
 import pandas as pd
 import yaml
 from pathlib import Path
