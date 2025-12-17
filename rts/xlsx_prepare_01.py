@@ -14,7 +14,7 @@ with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
 # ==== Параметры ====
 ticker = settings['ticker']
 PKL_DAILY = fr"{ticker}_futures_daily_vectors.pkl"
-start_date = '2015-06-01'  # Дата начала анализа
+start_date = '2015-02-24'  # Дата начала анализа
 
 # === Загрузка дневного датафрейма ===
 df = pd.read_pickle(PKL_DAILY)
@@ -77,8 +77,15 @@ for n in range(3, 31):
 df_rez = pd.DataFrame(
     [{
         "TRADEDATE": df.at[idx_bar, "TRADEDATE"],
+        "IDX_BAR": idx_bar,
         **max_results  # распаковка словаря в колонки MAX_3, MAX_4, ..., MAX_30
     }]
 )
 
-print(df_rez)
+with pd.option_context(
+        "display.width", 1000,
+        "display.max_columns", 30,
+        "display.max_colwidth", 100
+):
+    print("Датафрейм с результатом:")
+    print(df_rez)

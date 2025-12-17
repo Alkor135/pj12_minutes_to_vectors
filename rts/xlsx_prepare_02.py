@@ -14,17 +14,18 @@ with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
 
 ticker = settings['ticker']
 PKL_DAILY = fr"{ticker}_futures_daily_vectors.pkl"
-start_date = '2015-06-01'
+# start_date = '2015-01-01'
 
 # === Загрузка дневного датафрейма ===
 df = pd.read_pickle(PKL_DAILY)
 df['TRADEDATE'] = pd.to_datetime(df['TRADEDATE'])
 df = df.sort_values('TRADEDATE').reset_index(drop=True)
 df.dropna(inplace=True)  # Удаление строк с NaN
+df = df.head(35)  # Ограничение для тестирования
 
-# === Фильтрация строк после start_date ===
-start_date_ts = pd.to_datetime(start_date)
-df = df[df['TRADEDATE'] >= start_date_ts].reset_index(drop=True)
+# # === Фильтрация строк после start_date ===
+# start_date_ts = pd.to_datetime(start_date)
+# df = df[df['TRADEDATE'] >= start_date_ts].reset_index(drop=True)
 
 # === Инициализация df_rez ===
 df_rez = pd.DataFrame()
@@ -73,9 +74,19 @@ for idx_bar in tqdm(df.index, desc="Processing rows"):
         df_rez,
         pd.DataFrame([{
             "TRADEDATE": df.at[idx_bar, "TRADEDATE"],
-            "IDX_BAR": idx_bar,
+            # "IDX_BAR": idx_bar,
             **max_results
         }])
     ], ignore_index=True)
 
-print(df_rez)
+with pd.option_context(  # Печать широкого и длинного датафрейма
+        "display.width", 1000,
+        "display.max_columns", 30,
+        "display.max_colwidth", 100
+):
+    print("Датафрейм с результатом:")
+    print(df_rez)
+
+# Сохранение df_rez в pkl файл
+df_rez.to_pickle(f"{ticker}df_tmp.pkl")
+print(f"df_rez saved to {ticker}df_tmp.pkl")
