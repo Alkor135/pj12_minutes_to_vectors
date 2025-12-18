@@ -31,11 +31,6 @@ df = pd.read_pickle(PKL_DAILY)
 df['TRADEDATE'] = pd.to_datetime(df['TRADEDATE'])
 df = df.sort_values('TRADEDATE').reset_index(drop=True)
 df.dropna(inplace=True)  # Удаление строк с NaN
-# df = df.head(35)  # Ограничение для тестирования
-
-# # === Фильтрация строк после start_date ===
-# start_date_ts = pd.to_datetime(start_date)
-# df = df[df['TRADEDATE'] >= start_date_ts].reset_index(drop=True)
 
 # === Инициализация df_rez ===
 df_rez = pd.DataFrame()
